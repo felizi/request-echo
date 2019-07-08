@@ -32,6 +32,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	for k, v := range r.Header {
 		fmt.Printf("%s:%s\n", k, v)
 	}
+	fmt.Printf("%s:%s\n", "Host", r.Host)
 
 	body, _ := ioutil.ReadAll(r.Body)
 	fmt.Println("=============================== BODY ==============================")

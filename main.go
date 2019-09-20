@@ -20,24 +20,22 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("===================================================================")
-
-	fmt.Println("=============================== HOST ==============================")
-	fmt.Println(r.Host)
-
-	fmt.Println("=============================== URL ===============================")
-	fmt.Printf("%v %v %v\n", r.Method, r.URL, r.Proto)
-
-	fmt.Println("=============================== HEADERS ===========================")
+	fmt.Println("------------------------------------------------------------------------------------")
+	fmt.Printf("Host: %v\n", r.Host)
+	fmt.Printf("URL: %v %v %v\n", r.Method, r.URL, r.Proto)
+	fmt.Println("Headers:")
 	for k, v := range r.Header {
 		fmt.Printf("%s:%s\n", k, v)
 	}
 
 	body, _ := ioutil.ReadAll(r.Body)
-	fmt.Println("=============================== BODY ==============================")
-	fmt.Printf("%s\n", body)
+	fmt.Printf("Body: %s\n", body)
 
-	fmt.Println("===================================================================")
+	fmt.Println("Cookies:")
+	for _, cookie := range r.Cookies() {
+		fmt.Printf("Cookie: %s\n", cookie.Name)
+		fmt.Printf("Value: %s\n", cookie.Value)
+	}
 
 	w.WriteHeader(200)
 }

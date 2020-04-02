@@ -1,5 +1,5 @@
 # request-echo
-Simple request echo for log/debug
+Simple request echo for troubleshooting/debuging
 
 ### Prerequisites
 This project requires **Golang**:
@@ -17,6 +17,10 @@ You can pass parameters for executation:
 * Port
 ```
 -p "8888"
+```
+* Sleep before response (milliseconds)
+```
+-s 10
 ```
 
 For running without compiling, execute the command bellow

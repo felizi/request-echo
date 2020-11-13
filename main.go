@@ -11,19 +11,20 @@ import (
 func main() {
 	port := flag.String("p", "8888", "port of server")
 	sleep := flag.Int("s", 0, "response sleep in milliseconds")
+	statusCode := flag.Int("sc", 200, "status code to response - default 200")
 	flag.Parse()
 
 	fmt.Printf("Request echo on port %s\n", *port)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		handler(w, r, *sleep)
+		handler(w, r, *sleep, *statusCode)
 	})
 
 	fmt.Println(http.ListenAndServe(":"+*port, nil))
 
 }
 
-func handler(w http.ResponseWriter, r *http.Request, sleep int) {
+func handler(w http.ResponseWriter, r *http.Request, sleep, statusCode int) {
 	fmt.Println("------------------------------------------------------------------------------------")
 	fmt.Printf("Host: %v\n", r.Host)
 	fmt.Printf("URL: %v %v %v\n", r.Method, r.URL, r.Proto)
@@ -44,5 +45,5 @@ func handler(w http.ResponseWriter, r *http.Request, sleep int) {
 
 	time.Sleep(time.Millisecond * time.Duration(sleep))
 
-	w.WriteHeader(200)
+	w.WriteHeader(statusCode)
 }

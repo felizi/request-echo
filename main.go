@@ -45,5 +45,16 @@ func handler(w http.ResponseWriter, r *http.Request, sleep, statusCode int) {
 
 	time.Sleep(time.Millisecond * time.Duration(sleep))
 
+	cors(w, r)
+
 	w.WriteHeader(statusCode)
+}
+
+func cors(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		w.Header().Set("access-control-allow-credentials", "true")
+		w.Header().Set("access-control-allow-headers", r.Header.Get("access-control-request-headers"))
+		w.Header().Set("access-control-request-method", r.Header.Get("access-control-request-method"))
+		w.Header().Set("access-control-allow-origin", r.Header.Get("origin"))
+	}
 }

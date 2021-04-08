@@ -58,7 +58,7 @@ func handler(w http.ResponseWriter, r *http.Request, failureRate, failureStatusC
 
 func mustFail(rate int) bool {
 	rand.Seed(time.Now().UTC().UnixNano())
-	return randInt(0, 100) > rate
+	return randInt(0, 100) < rate
 }
 
 func randInt(min int, max int) int {

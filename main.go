@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"time"
 )
@@ -11,20 +12,22 @@ import (
 func main() {
 	port := flag.String("p", "8888", "port of server")
 	sleep := flag.Int("s", 0, "response sleep in milliseconds")
+	failureRate := flag.Int("f", 0, "failure rate between 0 and 100")
+	failureStatusCode := flag.Int("fsc", 400, "status code to response when failure rate reached- default 400")
 	statusCode := flag.Int("sc", 200, "status code to response - default 200")
 	flag.Parse()
 
 	fmt.Printf("Request echo on port %s\n", *port)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		handler(w, r, *sleep, *statusCode)
+		handler(w, r, *failureRate, *failureStatusCode, *sleep, *statusCode)
 	})
 
 	fmt.Println(http.ListenAndServe(":"+*port, nil))
 
 }
 
-func handler(w http.ResponseWriter, r *http.Request, sleep, statusCode int) {
+func handler(w http.ResponseWriter, r *http.Request, failureRate, failureStatusCode, sleep, statusCode int) {
 	fmt.Println("------------------------------------------------------------------------------------")
 	fmt.Printf("Host: %v\n", r.Host)
 	fmt.Printf("URL: %v %v %v\n", r.Method, r.URL, r.Proto)
@@ -43,11 +46,23 @@ func handler(w http.ResponseWriter, r *http.Request, sleep, statusCode int) {
 		fmt.Printf("Value: %s\n", cookie.Value)
 	}
 
-	time.Sleep(time.Millisecond * time.Duration(sleep))
-
 	cors(w, r)
 
-	w.WriteHeader(statusCode)
+	if mustFail(failureRate) {
+		w.WriteHeader(failureStatusCode)
+	} else {
+		time.Sleep(time.Millisecond * time.Duration(sleep))
+		w.WriteHeader(statusCode)
+	}
+}
+
+func mustFail(rate int) bool {
+	rand.Seed(time.Now().UTC().UnixNano())
+	return randInt(0, 100) > rate
+}
+
+func randInt(min int, max int) int {
+	return min + rand.Intn(max-min)
 }
 
 func cors(w http.ResponseWriter, r *http.Request) {
